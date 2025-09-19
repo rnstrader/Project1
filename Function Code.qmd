@@ -10,6 +10,6 @@ Writing a function to input an API Url and then review it in our workspace.
 library(httr)
 usual_process <- function(URL) {
   id <- GET(URL)
-  return(str(id))
+  return(id)
 }
 ```
