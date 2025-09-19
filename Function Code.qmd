@@ -15,13 +15,14 @@ usual_process <- function(URL) {
 }
 ```
 
-Writing a function to take in the output of returned by GET() and create a tibble from it.
+Writing a function to take in the output of returned by GET() and create a tibble from it, assigning column names relevant to the data of interest.
 ```{r}
 library(jsonlite)
 helper <- function(id) {
   parsed_stats <- fromJSON(rawToChar(id$content))
-  parsed_
   tibble <- as_tibble(parsed_stats)
+  colnames(tibble) <- tibble[1,]
+  tibble <- tibble[-1,]
   return(tibble)
 }
 ```
