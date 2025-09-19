@@ -20,7 +20,8 @@ Writing a function to take in the output of returned by GET() and create a tibbl
 library(jsonlite)
 helper <- function(id) {
   parsed_stats <- fromJSON(rawToChar(id$content))
-  tibble <- as_tibble(parsed_stats$variables)
+  parsed_
+  tibble <- as_tibble(parsed_stats)
   return(tibble)
 }
 ```
