@@ -6,4 +6,7 @@ editor: visual
 
 ## Data Processing
 
-We start by finding the URL for the 2022 Census Microdata API from Census.gov and then defining that as our URL_id object. This then allows for 
+We start by creating a function that takes any general URL (In this example the URL for the 2022 Census Microdata API from Census.gov) and then defining that as our URL_id object. 
+```{r}
+URL_id <- usual_process("api.census.gov/data/2022/acs/acs1/pums?get=SEX,PWGTP,MAR&SCHL=24&key=YOUR_KEY_GOES_HERE")
+```

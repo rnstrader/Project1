@@ -5,12 +5,11 @@ editor: visual
 ---
 
 ## Data Processing
-Writing a function to input an API Url and then import it into our workspace.
+Writing a function to input an API Url and then review it in our workspace.
 ```{r}
 library(httr)
-
-URL_id <- "api.census.gov/data/2022/acs/acs1/pums?get=SEX,PWGTP,MAR&SCHL=24&key=YOUR_KEY_GOES_HERE"
-
-id <- GET(URL_id)
-str(id)
+usual_process <- function(URL) {
+  id <- GET(URL)
+  return(str(id))
+}
 ```
