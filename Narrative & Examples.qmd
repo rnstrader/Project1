@@ -8,7 +8,7 @@ editor: visual
 
 We start by creating a function that takes any general URL (In this example the URL for the 2022 Census Microdata API from Census.gov) and then outputting the result of the GET() function as our URL_id object. After looking at its structure we can see that the raw data is in the content element. 
 ```{r}
-URL_id <- usual_process("https://api.census.gov/data/2022/acs/acs1/pums?get=SEX,PWGTP,MAR&for=region:*&SCHL=24")
+URL_id <- usual_process("https://api.census.gov/data/2022/acs/acs1/pums?get=SEX,PWGTP,MAR&SCHL=24")
 URL_id
 str(URL_id, max.level = 1)
 ```
@@ -17,4 +17,9 @@ Next, we take the output of the GET() function (same output as function above) a
 ```{r}
 Census_2022 <- helper(URL_id) 
 Census_2022
+```
+
+The census() function will build a URL based on variables specified within the function and then query the API and output the requested data as a neat tibble with appropriate data types.
+```{r}
+census()
 ```
