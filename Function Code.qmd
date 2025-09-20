@@ -29,12 +29,18 @@ helper <- function(id) {
 Writing a function to query the Census API and also allow several variables to be specified within.
 ```{r}
 census <- function(year = 2022, numvar = c("AGEP", "PWGTP"), catvar = "SEX", geog = "All", spec = NULL) {
+  
+  if(!(year %in% c(2010:2022))) {
+    stop("Error: year not valid")
+  } 
+  
+  if(!(numvar %in% c("AGEP", "GASP", "GRPIP", "JWAP", "JWDP", "JWMNP"))) {
+    stop("Error: numvar not valid")
+  }
+  
+  
   url <- paste("https://api.census.gov/data", as.character(year),"acs/acs1/pums?get=", sep = "/") 
-  
-  
-  
-   url <- paste("https://api.census.gov/data", as.character(year),"acs/acs1/pums?get=", sep = "/") 
 return(url)
 }
-census(numvar = c("GASP", "JWMNP"))
+census()
 ```
