@@ -34,12 +34,29 @@ census <- function(year = 2022, numvar = c("AGEP", "PWGTP"), catvar = "SEX", geo
     stop("Error: year not valid")
   } 
   
-  if(!(numvar %in% c("AGEP", "GASP", "GRPIP", "JWAP", "JWDP", "JWMNP"))) {
+  numvalid <- c("AGEP", "GASP", "GRPIP", "JWAP", "JWDP", "JWMNP", "PWGTP")
+  
+  numvar <- unique(c(numvar, "PWGTP"))
+  
+  if(any(!(numvar %in% numvalid))) {
     stop("Error: numvar not valid")
+  }
+  numvar <- paste(numvar, collapse = ",")
+  
+  catvalid <- c("FER", "HHL", "HISPEED", "JWTRNS", "SCH", "SCHL", "SEX")
+  
+  if(any(!(catvar %in% catvalid))) {
+    stop("Error: catvar not valid")
+  }
+  
+  if(length(catvar) == 0) {
+    stop("Error: at least one catvar must be specified")
   }
   
   
+  
   url <- paste("https://api.census.gov/data", as.character(year),"acs/acs1/pums?get=", sep = "/") 
+  url <- paste0(url, numvar)
 return(url)
 }
 census()
