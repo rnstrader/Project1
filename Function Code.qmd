@@ -28,46 +28,59 @@ helper <- function(id) {
 ```
 Writing a function to query the Census API and also allow several variables to be specified within.
 ```{r}
-census <- function(year = 2022, numvar = c("AGEP", "PWGTP"), catvar = "SEX", geog = "all", spec = NULL) {
+#setting up function with default arguments
+census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", geog = "all", spec = NULL) {
   
+  #checking for valid year
   if(!(year %in% c(2010:2022))) {
     stop("Error: year not valid")
   } 
   
-  numvalid <- c("AGEP", "GASP", "GRPIP", "JWAP", "JWDP", "JWMNP", "PWGTP")
+  #describing valid numeric variables
+  num_valid <- c("AGEP", "GASP", "GRPIP", "JWAP", "JWDP", "JWMNP", "PWGTP")
   
-  numvar <- unique(c(numvar, "PWGTP"))
+  #ensuring the PWGTP is always returned
+  num_var <- unique(c(num_var, "PWGTP"))
   
-  if(any(!(numvar %in% numvalid))) {
+  #checking for valid numeric variables, then cleaning it up to be easily added to url
+  if(any(!(num_var %in% num_valid))) {
     stop("Error: numvar not valid")
   }
-  numvar <- paste(numvar, collapse = ",")
+  num_var <- paste(num_var, collapse = ",")
   
-  catvalid <- c("FER", "HHL", "HISPEED", "JWTRNS", "SCH", "SCHL", "SEX")
+  #describing valid categorical variables
+  cat_valid <- c("FER", "HHL", "HISPEED", "JWTRNS", "SCH", "SCHL", "SEX")
   
-  if(any(!(catvar %in% catvalid))) {
+  #checking for valid categorical variables
+  if(any(!(cat_var %in% cat_valid))) {
     stop("Error: catvar not valid")
   }
   
-  if(length(catvar) == 0) {
+  #ensuring at least one catvar is returned, then cleaning variable up to be easily added to url
+  if(length(cat_var) == 0) {
     stop("Error: at least one catvar must be specified")
   }
-  catvar <- paste(catvar, collapse = ",")
+  cat_var <- paste(cat_var, collapse = ",")
   
-  geogvalid <- c("all", "region", "division", "state")
+  #describing valid geographical levels
+  geog_valid <- c("all", "region", "division", "state")
   
-  if(any(!(geog %in% geogvalid))) {
+  #checking for valid geographical levels
+  if(any(!(geog %in% geog_valid))) {
     stop("Error: geog not valid")
   }
   
   
-  
+  #creating url from various arguments for census api
   url <- paste("https://api.census.gov/data", as.character(year),"acs/acs1/pums?get=", sep = "/")
-  url <- paste0(url, numvar) 
-  url <- paste(url, catvar, sep = ",") 
+  url <- paste0(url, num_var) 
+  url <- paste(url, cat_var, sep = ",") 
   url <- paste0(url, "&for=", geog)
   
+  #GET function from first problem
   #id <- usual_process(url)
+  
+  #helper function from second problem to create tibble 
   #tibble <- helper(id)
     
   return(url)
