@@ -72,17 +72,22 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
   
   
   #creating url from various arguments for census api
-  url <- paste("https://api.census.gov/data", as.character(year),"acs/acs1/pums?get=", sep = "/")
-  url <- paste0(url, num_var) 
-  url <- paste(url, cat_var, sep = ",") 
-  url <- paste0(url, "&for=", geog)
+  url <- paste("https://api.census.gov/data", as.character(year),"acs/acs1/pums?get=", sep = "/") |>
+    paste0(num_var) |>
+    paste(cat_var, sep = ",") |>
+    paste0("&for=", geog)
   
   #GET function from first problem
   #id <- usual_process(url)
   
   #helper function from second problem to create tibble 
   #tibble <- helper(id)
-    
+  
+  #converts JWAP and JWDP variables to time, other variables in num_var to numeric
+  #tibble <- tibble |> 
+    #mutate(across(any_of(c("JWAP", "JWDP")), as.POSIXct())) |>
+    #mutate(across(any_of(c("AGEP", "GASP", "GRPIP", "JWMNP", "PWGTP")), as.numeric()))
+  
   return(url)
 }
 census()
