@@ -62,12 +62,19 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
   }
   cat_var <- paste(cat_var, collapse = ",")
   
-  #checking for valid geographical levels & subsets depending on level selected
+  #checking for valid geographical levels & subsets depending on level selected, includes all of the given geography level if no subset is specified
   spec_valid <- list(region = 1:4, division = 1:9, state = 1:56)
-  if (!geog %in% names(spec_valid)) {
-    stop("Error: Invalid geog")
+  if(is.null(spec)) {
+     
   }
-  if(!spec %in% spec_valid[[geog]])
+    else {
+      if(!geog %in% names(spec_valid)) {
+    stop("Error: invalid geog")
+  }
+  if(!spec %in% spec_valid[[geog]]) {
+    stop("Error: invalid spec for geog selected")
+  }
+    }
   
   #creating url from various arguments for census api
   url <- paste("https://api.census.gov/data", as.character(year),"acs/acs1/pums?get=", sep = "/") |>
@@ -91,5 +98,5 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
   
   return(url)
 }
-census(geog = state)
+census(geog = "state")
 ```
