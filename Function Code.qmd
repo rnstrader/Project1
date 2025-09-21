@@ -60,10 +60,17 @@ census <- function(year = 2022, numvar = c("AGEP", "PWGTP"), catvar = "SEX", geo
     stop("Error: geog not valid")
   }
   
-  url <- paste("https://api.census.gov/data", as.character(year),"acs/acs1/pums?get=", sep = "/") 
-  url <- paste0(url, numvar)
-  url <- paste(url, catvar, sep = ",")
-return(url)
+  
+  
+  url <- paste("https://api.census.gov/data", as.character(year),"acs/acs1/pums?get=", sep = "/")
+  url <- paste0(url, numvar) 
+  url <- paste(url, catvar, sep = ",") 
+  url <- paste0(url, "&for=", geog)
+  
+  #id <- usual_process(url)
+  #tibble <- helper(id)
+    
+  return(url)
 }
 census()
 ```
