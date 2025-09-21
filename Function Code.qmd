@@ -29,7 +29,7 @@ helper <- function(id) {
 Writing a function to query the Census API and also allow several variables to be specified within.
 ```{r}
 #setting up function with default arguments
-census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", geog = "all", spec = NULL) {
+census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", geog, spec = NULL) {
   
   #checking for valid year
   if(!(year %in% c(2010:2022))) {
@@ -44,7 +44,7 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
   
   #checking for valid numeric variables, then cleaning it up to be easily added to url
   if(any(!(num_var %in% num_valid))) {
-    stop("Error: numvar not valid")
+    stop("Error: num_var not valid")
   }
   num_var <- paste(num_var, collapse = ",")
   
@@ -53,29 +53,30 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
   
   #checking for valid categorical variables
   if(any(!(cat_var %in% cat_valid))) {
-    stop("Error: catvar not valid")
+    stop("Error: cat_var not valid")
   }
   
   #ensuring at least one catvar is returned, then cleaning variable up to be easily added to url
   if(length(cat_var) == 0) {
-    stop("Error: at least one catvar must be specified")
+    stop("Error: at least one cat_var must be specified")
   }
   cat_var <- paste(cat_var, collapse = ",")
   
-  #describing valid geographical levels
-  geog_valid <- c("all", "region", "division", "state")
-  
-  #checking for valid geographical levels
-  if(any(!(geog %in% geog_valid))) {
-    stop("Error: geog not valid")
+  #checking for valid geographical levels & subsets depending on level selected
+  spec_valid <- list(region = 1:4, division = 1:9, state = 1:56)
+  if (!geog %in% names(spec_valid)) {
+    stop("Error: Invalid geog")
   }
-  
+  if(!spec %in% spec_valid[[geog]])
   
   #creating url from various arguments for census api
   url <- paste("https://api.census.gov/data", as.character(year),"acs/acs1/pums?get=", sep = "/") |>
     paste0(num_var) |>
     paste(cat_var, sep = ",") |>
     paste0("&for=", geog)
+  if(length(spec) != 0) {
+    url <- paste(url, spec, sep = ":")
+  }
   
   #GET function from first problem
   #id <- usual_process(url)
@@ -90,5 +91,5 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
   
   return(url)
 }
-census()
+census(geog = state)
 ```
