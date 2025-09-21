@@ -28,7 +28,7 @@ helper <- function(id) {
 ```
 Writing a function to query the Census API and also allow several variables to be specified within.
 ```{r}
-census <- function(year = 2022, numvar = c("AGEP", "PWGTP"), catvar = "SEX", geog = "All", spec = NULL) {
+census <- function(year = 2022, numvar = c("AGEP", "PWGTP"), catvar = "SEX", geog = "all", spec = NULL) {
   
   if(!(year %in% c(2010:2022))) {
     stop("Error: year not valid")
@@ -52,11 +52,17 @@ census <- function(year = 2022, numvar = c("AGEP", "PWGTP"), catvar = "SEX", geo
   if(length(catvar) == 0) {
     stop("Error: at least one catvar must be specified")
   }
+  catvar <- paste(catvar, collapse = ",")
   
+  geogvalid <- c("all", "region", "division", "state")
   
+  if(any(!(geog %in% geogvalid))) {
+    stop("Error: geog not valid")
+  }
   
   url <- paste("https://api.census.gov/data", as.character(year),"acs/acs1/pums?get=", sep = "/") 
   url <- paste0(url, numvar)
+  url <- paste(url, catvar, sep = ",")
 return(url)
 }
 census()
