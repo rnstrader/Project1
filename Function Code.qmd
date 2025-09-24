@@ -86,17 +86,16 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
   }
   
   #GET function from first problem
-  #id <- usual_process(url)
+  id <- usual_process(url)
   
   #helper function from second problem to create tibble 
-  #tibble <- helper(id)
+  tibble <- helper(id)
   
   #converts JWAP and JWDP variables to time, other variables in num_var to numeric
-  #tibble <- tibble |> 
-    #mutate(across(any_of(c("JWAP", "JWDP")), as.POSIXct())) |>
-    #mutate(across(any_of(c("AGEP", "GASP", "GRPIP", "JWMNP", "PWGTP")), as.numeric()))
+  tibble <- tibble |> mutate(across(any_of(c("JWAP", "JWDP")), as.POSIXct))
+  tibble <- tibble |> mutate(across(any_of(c("AGEP", "GASP", "GRPIP", "JWMNP", "PWGTP")), as.numeric))
   
-  return(url)
+  return(tibble)
 }
-census()
+census(num_var = "JWDP")
 ```
