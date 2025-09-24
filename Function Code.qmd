@@ -29,7 +29,7 @@ helper <- function(id) {
 Writing a function to query the Census API and also allow several variables to be specified within.
 ```{r}
 #setting up function with default arguments
-census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", geog, spec = NULL) {
+census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", geog = "state", spec = "20") {
   
   #checking for valid year
   if(!(year %in% c(2010:2022))) {
@@ -98,5 +98,5 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
   
   return(url)
 }
-census(geog = "state")
+census()
 ```
