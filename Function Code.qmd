@@ -77,12 +77,9 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
     }
   
   #creating url from various arguments for census api
-  url <- paste("https://api.census.gov/data", as.character(year),"acs/acs1/pums?get=", sep = "/") |>
-    paste0(num_var) |>
-    paste(cat_var, sep = ",") |>
-    paste0("&for=", geog)
+  url <- paste0("https://api.census.gov/data/", as.character(year), "/acs/acs1/pums?get=", num_var, ",", cat_var, "&for=", geog)
   if(length(spec) != 0) {
-    url <- paste(url, spec, sep = ":")
+    url <- paste0(url, ":", spec)
   }
   
   #GET function from first problem
@@ -113,7 +110,21 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
 }
 ```
 
-Writing a function that allows a user to specify multiple years through looping the single year function above.
+Writing a function that allows a user to specify all the parameters above as well as multiple years through looping the single year function above.
 ```{r}
-census_year_range()
+#Setting up the function with same arguments from above, but with the addition of the years variable.
+census_year_range <- function(years, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", geog = "state", spec = "20") {
+  
+  #creating a list to store results
+  output <- list()
+  
+  #for loop to apply the census function to each year of interest, as well as transferring the arguments of census_year_range to the arguments of the census function
+  for(x in years) {
+    output[[as.character(x)]] <- census(year = x, num_var = num_var, cat_var = cat_var, geog = geog, spec = spec)
+  }
+  
+  #binding the tibbles together with a years column
+  bind_rows(output, .id = "years")
+}   
+census_year_range(years = c(2019, 2021))
 ```
