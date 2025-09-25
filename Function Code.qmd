@@ -104,13 +104,16 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
    return(x)
  }
 
-  
   #converts JWAP and JWDP code numbers to midpoint time, other variables in num_var to numeric
   tibble <- tibble |> convert_time()
   
   tibble <- tibble |> mutate(across(any_of(c("AGEP", "GASP", "GRPIP", "JWMNP", "PWGTP")), as.numeric))
-  
-  
+
   return(tibble)
 }
+```
+
+Writing a function that allows a user to specify multiple years through looping the single year function above.
+```{r}
+census_year_range()
 ```
