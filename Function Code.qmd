@@ -91,11 +91,26 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
   #helper function from second problem to create tibble 
   tibble <- helper(id)
   
-  #converts JWAP and JWDP variables to time, other variables in num_var to numeric
-  tibble <- tibble |> mutate(across(any_of(c("JWAP", "JWDP")), as.POSIXct))
+  #writing a new function to parse out the number code  for time columns into a midpoint time value. the function relies on the fact that the midpoints of each number code: (0-285) start at 00:002 and count up by intervals of 5 minutes.
+ convert_time <- function(x) {
+   time_cols <- c("JWAP", "JWDP")
+   for(col in time_cols) {
+     if(col %in% names(x)) {
+       numeric_col <- as.numeric(x[[col]])
+       x[[col]] <- ifelse(numeric_col == 0, as.POSIXct(NA), as.POSIXct("00:02", format = "%H:%M") + (numeric_col-1) * 300)
+       class(x[[col]]) <- c("POSIXct", "POSIXt")
+     }
+   }
+   return(x)
+ }
+
+  
+  #converts JWAP and JWDP code numbers to midpoint time, other variables in num_var to numeric
+  tibble <- tibble |> convert_time()
+  
   tibble <- tibble |> mutate(across(any_of(c("AGEP", "GASP", "GRPIP", "JWMNP", "PWGTP")), as.numeric))
+  
   
   return(tibble)
 }
-census(num_var = "JWDP")
 ```
