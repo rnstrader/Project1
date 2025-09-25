@@ -126,5 +126,4 @@ census_year_range <- function(years, num_var = c("AGEP", "PWGTP"), cat_var = "SE
   #binding the tibbles together with a years column
   bind_rows(output, .id = "years")
 }   
-census_year_range(years = c(2019, 2021))
 ```
