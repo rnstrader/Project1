@@ -5,12 +5,12 @@ editor: visual
 ---
 
 ## Data Processing
-Writing a function to input an API Url and then review it in our workspace.
+Writing a function to input an API Url and then review it in our workspace. The timeout was increased to allow for the heavier burdens that come with loading the large datasets with the later functions on this page.
 ```{r}
 library(tidyverse)
 library(httr)
 usual_process <- function(URL) {
-  id <- GET(URL)
+  id <- GET(URL, httr::timeout(60))
   return(id)
 }
 ```

@@ -27,5 +27,5 @@ census(num_var = c("AGEP", "JWAP"))
 
 If we want to look at a range of years, the census_year_range function calls the census function once for each year of interest, then merges these tibbles into one with a year variable.
 ```{r}
-
+census_year_range(years = (c(2021, 2022)))
 ```
