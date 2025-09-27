@@ -5,7 +5,9 @@ editor: visual
 ---
 
 ## Data Processing
+
 Writing a function to input an API Url and then review it in our workspace. The timeout was increased to allow for the heavier burdens that come with loading the large datasets with the later functions on this page.
+
 ```{r}
 library(tidyverse)
 library(httr)
@@ -16,6 +18,7 @@ usual_process <- function(URL) {
 ```
 
 Writing a function to take in the output of returned by GET() and create a tibble from it, assigning column names relevant to the data of interest.
+
 ```{r}
 library(jsonlite)
 helper <- function(id) {
@@ -26,7 +29,9 @@ helper <- function(id) {
   return(tibble)
 }
 ```
+
 Writing a function to query the Census API and also allow several variables to be specified within.
+
 ```{r}
 #setting up function with default arguments
 census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", geog = "state", spec = "20") {
@@ -111,6 +116,7 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
 ```
 
 Writing a function that allows a user to specify all the parameters above as well as multiple years through looping the single year function above.
+
 ```{r}
 #Setting up the function with same arguments from above, but with the addition of the years variable.
 census_year_range <- function(years, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", geog = "state", spec = "20") {
@@ -126,4 +132,32 @@ census_year_range <- function(years, num_var = c("AGEP", "PWGTP"), cat_var = "SE
   #binding the tibbles together with a years column
   bind_rows(output, .id = "years")
 }   
+```
+
+Adding the census class to the census data.
+
+```{r}
+class(tibble) <- c("census", class(tibble))
+
+```
+
+Creating the census summary function that will produce means and standard deviations numeric variables as well as counts for categorical variables.
+
+```{r}
+summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
+  #Checking for census class
+  if (! "census" %in% class(tibble) {
+    stop("Error: Does not have census class")
+  }
+  #Creating weight vector
+  weight_vector <- tibble$PWGTP
+  
+  #Defining numeric variables to summarize
+  if (is.null(num_var)) {
+    numeric_vars <- names(dplyr::select(tibble, where(is.numeric)))
+    numeric_vars <- numeric_vars[numeric_vars != "PWGTP"]
+  }
+  sum(numeric_vector*weight_vector)/sum(weight_vector)
+  sqrt(sum(numeric_vector^2 * weight_vector)/sum(weight_vector) - sample_mean^2)
+}
 ```
