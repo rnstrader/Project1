@@ -28,7 +28,7 @@ The census() function will build a URL based on variables specified within the f
 census(num_var = c("AGEP", "JWAP"))
 ```
 
-If we want to look at a range of years, the census_year_range function calls the census function once for each year of interest, then merges these tibbles into one with a year variable.
+If we want to look at a range of years, the census_year_range function calls the census function once for each year of interest, then merges these tibbles into one with a year variable. Every year within the range of valid years for the census function applies, except 2020 as there is no census API for that year.
 ```{r}
 census_year_range(years = (c(2021, 2022)))
 ```
