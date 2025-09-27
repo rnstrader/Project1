@@ -23,8 +23,7 @@ Census_2022 <- helper(URL_id)
 Census_2022
 ```
 
-The census() function will build a URL based on variables specified within the function and then query the API and output the requested data as a neat tibble with appropriate data types.
-In this case, the example has many NA values of JWAP because the JWAP variable value of 0 corresponds to either unemployed individuals or someone who is working from home, so a time of arrival for work is not applicable in this case.
+The census() function will build a URL based on variables specified within the function and then query the API and output the requested data as a neat tibble with appropriate data types. The following example highlights the data type coercion built into this function. For example, the time column JWAP has many NA values of JWAP because the JWAP variable (time of arrival for work) value in the API is a number code, in which 0 corresponds to either unemployed individuals or someone who is working from home, so a time of arrival for work is not applicable in this case. To help prevent excess burden on loading data, a geographical subset was added and assigned to state 20, which is the census code for the state of Kansas.
 ```{r}
 census(num_var = c("AGEP", "JWAP"))
 ```
