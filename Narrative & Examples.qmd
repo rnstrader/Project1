@@ -6,26 +6,35 @@ editor: visual
 
 ## Data Processing
 
-We start by creating a function that takes any general URL (In this example the URL for the 2022 Census Microdata API from Census.gov) and then outputting the result of the GET() function as our URL_id object. After looking at its structure we can see that the raw data is in the content element. 
+The purpose of all of the code that is included in this narrative is to highlight examples of and to utilize functions created in the Function Code.qmd file of this project to both query the US Census API, as well as output the information contained within into a convenient tibble format, while allowing the user to specify several endpoints of interest within the requested region/geographical subset. We start by importing all of the necessary packages for these functions, then creating a function that takes any general URL (In this example the URL for the 2022 Census Microdata API from Census.gov) and then outputting the result of the GET() function as our URL_id object. This function will be utilized within future functions to quickly transform the URL that has been built to the user's specifications. After looking at its structure we can see that the raw data is in the content element. 
 ```{r}
+library(tidyverse)
+library(httr)
+library(jsonlite)
+
 URL_id <- usual_process("https://api.census.gov/data/2022/acs/acs1/pums?get=SEX,PWGTP,MAR&SCHL=24")
 URL_id
 str(URL_id, max.level = 1)
 ```
 
-Next, we take the output of the GET() function (same output as function above) and turn it into a tibble using the helper function. This function both creates a tibble as well as assigns names that correspond to the requested data. 
+Next, we take the output of the GET() function (same output as function above) and turn it into a tibble by creating and using a helper function. This function both creates a tibble as well as assigns names that correspond to the requested data. This function was also used within future functions to quickly return the data in the tibble format, from which various edits on the data type in each column can be performed.
 ```{r}
 Census_2022 <- helper(URL_id) 
 Census_2022
 ```
 
-The census() function will build a URL based on variables specified within the function and then query the API and output the requested data as a neat tibble with appropriate data types.
-In this case, the example has many NA values of JWAP because the JWAP variable value of 0 corresponds to either unemployed individuals or someone who is working from home, so a time of arrival for work is not applicable in this case.
+The census() function will build a URL based on variables specified within the function and then query the API and output the requested data as a neat tibble with appropriate data types. The following example highlights the data type coercion built into this function. For example, the time column JWAP has many NA values of JWAP because the JWAP variable (time of arrival for work) value in the API is a number code, in which 0 corresponds to either unemployed individuals or someone who is working from home, so a time of arrival for work is not applicable in this case. To help prevent excess burden on loading data, a geographical subset was added and assigned to state 20, which is the census code for the state of Kansas.
 ```{r}
 census(num_var = c("AGEP", "JWAP"))
 ```
 
-If we want to look at a range of years, the census_year_range function calls the census function once for each year of interest, then merges these tibbles into one with a year variable.
+If we want to look at a range of years, the census_year_range function calls the census function once for each year of interest, then merges these tibbles into one with a year variable. Every year within the range of valid years for the census function applies, except 2020 as there is no census API for that year. In this example we chose the years 2022, which is the default year call in census, plus the year 2021. The resulting tibble is considerably larger (58,897 rows vs 28,957 rows) than the previous example of the use of the census function due to the inclusion of two years of data.
 ```{r}
 census_year_range(years = (c(2021, 2022)))
+```
+
+## Investigation Using the Created Functions
+
+```{r}
+
 ```
