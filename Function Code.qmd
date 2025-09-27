@@ -141,12 +141,14 @@ class(tibble) <- c("census", class(tibble))
 
 ```
 
+## Summary Functions/Plots
+
 Creating the census summary function that will produce means and standard deviations numeric variables as well as counts for categorical variables.
 
 ```{r}
 summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
   #Checking for census class
-  if (! "census" %in% class(tibble) {
+  if (! "census" %in% class(tibble)) {
     stop("Error: Does not have census class")
   }
   #Creating weight vector
@@ -154,10 +156,31 @@ summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
   
   #Defining numeric variables to summarize
   if (is.null(num_var)) {
+    
+    #Default (all numeric colums besides PWGTP)
     numeric_vars <- names(dplyr::select(tibble, where(is.numeric)))
     numeric_vars <- numeric_vars[numeric_vars != "PWGTP"]
+    
+    if (length(numeric_vars) == 0) {
+      stop("Error: NO numeric variables found to summarize")
+    }
+    
+  } else {
+  
+    #Numeric Variables were specificed by user 
+    #Do the numeric variables exist?
+    if (!all(num_var %in% names(tibble))) {
+      stop("Error: 1 or more user-provided numeric variables were NOT found")
+    }
+    
+    #Are they numeric?
+    if (!all(sapply(tibble[num_var], is.numeric))) {
+      stop("Error: 1 or more user-provided variables is NOT numeric")
+    }
+    
+    #If pass all the above checks then use
+    numeric_vars <- num_var
   }
-  sum(numeric_vector*weight_vector)/sum(weight_vector)
-  sqrt(sum(numeric_vector^2 * weight_vector)/sum(weight_vector) - sample_mean^2)
 }
+
 ```
