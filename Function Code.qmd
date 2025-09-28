@@ -144,7 +144,6 @@ Creating the census summary function that will produce means and standard deviat
 
 #Calling data for function
 mydata <- census()
-glimpse(mydata)
 
 summary.function <- function(mydata, num_var = NULL, cat_var = NULL, na.rm = TRUE, ...){
   #Checking for census class
@@ -281,4 +280,32 @@ Testing the summary function on a variable returned from the census API function
 summary.function(mydata)
 
 
+```
+
+Creating a generic plot function to visualize data in census tibbles.
+
+```{r}
+#Plot function
+plot <- function(mydata, cat_var, num_var, ...) {
+  #Check that mydata is a census tibble
+  if (!"census" %in% class(mydata)) {
+    stop("Error: Object is not part of the census class")
+  }
+  
+  #Checking variable existance
+  if (!cat_var %in% names(mydata)) {
+    stop("Error: Categorical variable not found")
+  }
+  
+  if (!num_var %in% names(mydata)) {
+    stop("Error: Numeric variable not found")
+  }
+
+#Making the plot
+library(ggplot2)
+ggplot(mydata,
+       aes(x = get(cat_var), y = get(num_var), weight = PWGTP)) + geom_boxplot() + xlab("SEX") + ylab ("AGEP")
+}
+
+plot(mydata, "SEX", "AGEP")
 ```
