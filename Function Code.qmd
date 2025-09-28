@@ -143,7 +143,7 @@ class(tibble) <- c("census", class(tibble))
 
 ## Summary Functions/Plots
 
-Creating the census summary function that will produce means and standard deviations numeric variables as well as counts for categorical variables. Within the summary function, we will need to determine the two of the three arguments (the user provided numeric and categorical variables respectively).
+Creating the census summary function that will produce means and standard deviations for numeric variables as well as counts for categorical variables.
 
 ```{r}
 summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
@@ -158,10 +158,10 @@ summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
   if (is.null(num_var)) {
     
     #Default (all numeric colums besides PWGTP)
-    numeric_vars <- names(dplyr::select(tibble, where(is.numeric)))
-    numeric_vars <- numeric_vars[numeric_vars != "PWGTP"]
+    num_vars <- names(dplyr::select(tibble, where(is.numeric)))
+    num_vars <- num_vars[num_vars != "PWGTP"]
     
-    if (length(numeric_vars) == 0) {
+    if (length(num_vars) == 0) {
       stop("Error: NOT a numeric variable")
     }
     
@@ -180,7 +180,7 @@ summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
     }
     
     #If the input makes it  all the above checks then use
-    numeric_vars <- num_var
+    num_vars <- num_var
   }
   
   #Defining categorical variables (user-selection)
@@ -207,7 +207,60 @@ summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
     cat_vars <- cat_var
   }
   
-  #
+  #Summary function definiton (A. Numeric Summaries B. Categorical Summaries)
+  
+  #Creating the Numeric Summary Table to hold the results
+  num_stats <- data.frame(
+    variable = character(),
+    weighted_mean = numeric(),
+    weighted_sd = numeric(),
+    stringsAsFactors = FALSE
+    )
+  #Going through individual numeric variables
+  for (var in num_vars) {
+    numeric_vector <- tibble[[var]]
+    
+    #Formulas
+    sample_mean <- sum(numeric_vector * weight_vector)/ sum(weight_vector)
+    sample_sd <- sqrt(sum(numeric_vector^2 * weight_vector) / sum(weight_vector)-sample_mean^2)
+    
+    #Adding row to the result table
+    num_stats <- rbind(
+      num_stats,
+      data.frame(
+        variable = var,
+        weighted_mean = sample_mean,
+        weighted_sd = sample_sd,
+        stringsAsFactors = FALSE
+      )
+    )
+  }
+   #Creating the Categorical Summary Table to hold the results
+  cat_stats <- data.frame(
+    variable = character(),
+    level = character(),
+    weighted_count = numeric(),
+    stringsAsFactors = FALSE
+  )
+  #Going through individual categorical variables
+  for (var in cat_vars) {
+    cat_tibble <- tibble[[var]]
+    
+    #Weighted Counts
+    w_counts <- tapply(weight_vector, cat_tibble, sum, na.rm = TRUE)
+    
+    #Making it a data frame 
+    cat_df <- data.frame(
+      variable = var,
+      level = names(w_counts),
+      weighted_count = as.numeric(w_counts),
+      stringsAsFactors = FALSE
+    )
+    #Adding the rows to the result table
+    cat_stats <- rbind(cat_stats, cat_df)
+    
+  }
+  
 }
 
 ```
