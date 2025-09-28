@@ -39,6 +39,44 @@ census_year_range(years = (c(2021, 2022)))
 
 ## Investigation Using the Created Functions
 
-```{r}
+The purpose of this section is show how the summary function and plot function defined in the Function Code.qmd file can be used to generate weighted summaries as well as a generic boxplot from the census() tibble created from the API above. We are able to grab data from the census api, run weighted summaries (means and standard deviations) using PWGTP, and from that we are able to make a simple weighted boxplot.
 
+```{r}
+#Necessary Packages
+library(tidyverse)
+library(ggplot2)
+```
+
+To demonstrate the use of the functions created, we are going to grab a small demo set to use these functions on.
+
+```{r}
+mydata <- census(
+  year = 2022,
+  num_var = c("AGEP", "JWMNP"),
+  cat_var = "SEX",
+  geog = "state",
+  spec = "20"
+)
+
+class(mydata)
+mydata
+```
+
+We are going to use the created summary function to summarize all the numeric columns except for PWGTP to get a named list. It is a numeric table of weighted means/standard deviations (excluding PWGTP) and a categorical table of the weighted counts. By default it summarizes are the numeric columns in the tibble but we can select specific columns when we want to trim our focus.
+
+```{r}
+#Numeric (except for PWGTP)
+output <- summary.function(mydata)
+head(output$numeric)
+head(output$categorical)
+
+#Specific Numerical Summary
+AGEP_Specific <- summary.function(mydata, num_var = "AGEP", cat_var = "SEX")
+AGEP_Specific$numeric
+```
+
+For visual representation, we use a created plot function which will always produce a boxplot. The variables are passed as strings using named arguments. The plot function below uses sex as the categorical variable and AGEP as the numeric variable.
+
+```{r}
+plot(mydata, "SEX", "AGEP")
 ```
