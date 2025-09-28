@@ -110,6 +110,8 @@ census <- function(year = 2022, num_var = c("AGEP", "PWGTP"), cat_var = "SEX", g
   tibble <- tibble |> convert_time()
   
   tibble <- tibble |> mutate(across(any_of(c("AGEP", "GASP", "GRPIP", "JWMNP", "PWGTP")), as.numeric))
+  
+  class(tibble) <- c("census", class(tibble))
 
   return(tibble)
 }
@@ -134,31 +136,35 @@ census_year_range <- function(years, num_var = c("AGEP", "PWGTP"), cat_var = "SE
 }   
 ```
 
-Adding the census class to the census data.
-
-```{r}
-class(tibble) <- c("census", class(tibble))
-
-```
-
 ## Summary Functions/Plots
 
 Creating the census summary function that will produce means and standard deviations for numeric variables as well as counts for categorical variables.
 
 ```{r}
-summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
+
+#Calling data for function
+mydata <- census()
+glimpse(mydata)
+
+summary.function <- function(mydata, num_var = NULL, cat_var = NULL, na.rm = TRUE, ...){
   #Checking for census class
-  if (! "census" %in% class(tibble)) {
+  if (!"census" %in% class(mydata)) {
     stop("Error: Does not have census class")
   }
+  
+  #Checking that PWGTP exists and is numeric
+  if (!("PWGTP" %in% names(mydata)) || !is.numeric(mydata$PWGTP)) {
+    stop("Error: PWGTP is either missing or not numeric")
+  }
+  
   #Creating weight vector
-  weight_vector <- tibble$PWGTP
+  weight_vector <- mydata$PWGTP
   
   #Defining numeric variable (user-selection)
   if (is.null(num_var)) {
     
     #Default (all numeric colums besides PWGTP)
-    num_vars <- names(dplyr::select(tibble, where(is.numeric)))
+    num_vars <- names(dplyr::select(mydata, where(is.numeric)))
     num_vars <- num_vars[num_vars != "PWGTP"]
     
     if (length(num_vars) == 0) {
@@ -170,12 +176,12 @@ summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
     #Numeric Variables specificed by user 
     
     #If the variables are not found
-    if (!all(num_var %in% names(tibble))) {
+    if (!all(num_var %in% names(mydata))) {
       stop("Error: 1 or more user-provided numeric variables were NOT found")
     }
     
     #If the variables are not numeric
-    if (!all(sapply(tibble[num_var], is.numeric))) {
+    if (!all(sapply(mydata[num_var], is.numeric))) {
       stop("Error: 1 or more user-provided variables is NOT numeric")
     }
     
@@ -185,7 +191,7 @@ summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
   
   #Defining categorical variables (user-selection)
   if (is.null(cat_var)) {
-    cat_vars <- names(dplyr::select(tibble, where(is.character)))
+    cat_vars <- names(dplyr::select(mydata, where(is.character)))
     
     if (length(cat_vars) == 0) {
       stop("Error: NOT a character variable")
@@ -196,11 +202,11 @@ summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
     #Categorical variables specified by user
     
     #If categorical variables are not found
-    if (!all(cat_var %in% names(tibble))) {
+    if (!all(cat_var %in% names(mydata))) {
       stop("Error: 1 or more user-provided categorical variables were NOT found")
     }
     #If variables are not character
-    if (!all(sapply(tibble[cat_var], is.character))) {
+    if (!all(sapply(mydata[cat_var], is.character))) {
       stop("Error: 1 or more user-provided categorical variables is NOT character")
     }
     #If the input makes it  all the above checks then use
@@ -218,7 +224,7 @@ summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
     )
   #Going through individual numeric variables
   for (var in num_vars) {
-    numeric_vector <- tibble[[var]]
+    numeric_vector <- mydata[[var]]
     
     #Formulas
     sample_mean <- sum(numeric_vector * weight_vector)/ sum(weight_vector)
@@ -244,7 +250,7 @@ summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
   )
   #Going through individual categorical variables
   for (var in cat_vars) {
-    cat_tibble <- tibble[[var]]
+    cat_tibble <- mydata[[var]]
     
     #Weighted Counts
     w_counts <- tapply(weight_vector, cat_tibble, sum, na.rm = TRUE)
@@ -261,6 +267,18 @@ summary.census <- function(tibble, num_var = NULL, cat_var = NULL){
     
   }
   
+  #Returning Results 
+  return(list(numeric = num_stats, categorical = cat_stats))
+  
 }
+
+```
+
+Testing the summary function on a variable returned from the census API function.
+
+```{r}
+#Testing the summary function
+summary.function(mydata)
+
 
 ```
