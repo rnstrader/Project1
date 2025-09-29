@@ -11,6 +11,7 @@ Writing a function to input an API Url and then review it in our workspace. The 
 ```{r}
 library(tidyverse)
 library(httr)
+
 usual_process <- function(URL) {
   id <- GET(URL, httr::timeout(60))
   return(id)
@@ -21,6 +22,8 @@ Writing a function to take in the output of returned by GET() and create a tibbl
 
 ```{r}
 library(jsonlite)
+
+
 helper <- function(id) {
   parsed_stats <- fromJSON(rawToChar(id$content))
   tibble <- as_tibble(parsed_stats)
