@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Functions – Project 1</title>
+<title>Project 1: Narrative &amp; Examples – Project 1</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -122,11 +122,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./Function Code.html" aria-current="page"> 
+    <a class="nav-link" href="./Function Code.html"> 
 <span class="menu-text">Functions</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./Narrative &amp; Examples.html"> 
+    <a class="nav-link active" href="./Narrative &amp; Examples.html" aria-current="page"> 
 <span class="menu-text">Narrative &amp; Examples</span></a>
   </li>  
 </ul>
@@ -146,7 +146,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Functions</h1>
+<h1 class="title">Project 1: Narrative &amp; Examples</h1>
 </div>
 
 
@@ -163,6 +163,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<p>This chunk below allows functions created on the function code qmd file to be recognized when called on this file for the final webpage rendering.</p>
 <section id="data-processing" class="level2">
 <h2 class="anchored" data-anchor-id="data-processing">Data Processing</h2>
 <p>Writing a function to input an API Url and then review it in our workspace. The timeout was increased to allow for the heavier burdens that come with loading the large datasets with the later functions on this page.</p>
@@ -491,9 +492,218 @@ $categorical
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Function-Code_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Narrative---Examples_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
+</div>
+</div>
+</section>
+<section id="data-processing-1" class="level2">
+<h2 class="anchored" data-anchor-id="data-processing-1">Data Processing</h2>
+<p>The purpose of all of the code that is included in this narrative section is to highlight examples of and to utilize functions created in the Function Code.qmd file of this project to both query the US Census API, as well as output the information contained within into a convenient tibble format, while allowing the user to specify several endpoints of interest within the requested region/geographical subset. We start by importing all of the necessary packages for these functions, then creating a function that takes any general URL (In this example the URL for the 2022 Census Microdata API from Census.gov) and then outputting the result of the GET() function as our URL_id object. This function will be utilized within future functions to quickly transform the URL that has been built to the user’s specifications. After looking at its structure we can see that the raw data is in the content element.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(httr)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jsonlite)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>URL_id <span class="ot">&lt;-</span> <span class="fu">usual_process</span>(<span class="st">"https://api.census.gov/data/2022/acs/acs1/pums?get=SEX,PWGTP,MAR&amp;SCHL=24"</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>URL_id</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Response [https://api.census.gov/data/2022/acs/acs1/pums?get=SEX,PWGTP,MAR&amp;SCHL=24]
+  Date: 2025-09-30 21:25
+  Status: 200
+  Content-Type: application/json;charset=utf-8
+  Size: 938 kB
+[["SEX","PWGTP","MAR","SCHL"],
+["2","6","5","24"],
+["2","23","2","24"],
+["1","23","3","24"],
+["1","80","5","24"],
+["1","16","1","24"],
+["1","107","3","24"],
+["2","10","5","24"],
+["1","22","1","24"],
+["2","127","5","24"],
+...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(URL_id, <span class="at">max.level =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 10
+ $ url        : chr "https://api.census.gov/data/2022/acs/acs1/pums?get=SEX,PWGTP,MAR&amp;SCHL=24"
+ $ status_code: int 200
+ $ headers    :List of 11
+  ..- attr(*, "class")= chr [1:2] "insensitive" "list"
+ $ all_headers:List of 1
+ $ cookies    :'data.frame':    1 obs. of  7 variables:
+ $ content    : raw [1:937508] 5b 5b 22 53 ...
+ $ date       : POSIXct[1:1], format: "2025-09-30 21:25:46"
+ $ times      : Named num [1:6] 0 0 0 0.000112 0.193623 ...
+  ..- attr(*, "names")= chr [1:6] "redirect" "namelookup" "connect" "pretransfer" ...
+ $ request    :List of 7
+  ..- attr(*, "class")= chr "request"
+ $ handle     :Class 'curl_handle' &lt;externalptr&gt; 
+ - attr(*, "class")= chr "response"</code></pre>
+</div>
+</div>
+<p>Next, we take the output of the GET() function (same output as function above) and turn it into a tibble by creating and using a helper function. This function both creates a tibble as well as assigns names that correspond to the requested data. This function was also used within future functions to quickly return the data in the tibble format, from which various edits on the data type in each column can be performed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>Census_2022 <span class="ot">&lt;-</span> <span class="fu">helper</span>(URL_id) </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>Census_2022</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 44,079 × 4
+   SEX   PWGTP MAR   SCHL 
+   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+ 1 2     6     5     24   
+ 2 2     23    2     24   
+ 3 1     23    3     24   
+ 4 1     80    5     24   
+ 5 1     16    1     24   
+ 6 1     107   3     24   
+ 7 2     10    5     24   
+ 8 1     22    1     24   
+ 9 2     127   5     24   
+10 2     46    5     24   
+# ℹ 44,069 more rows</code></pre>
+</div>
+</div>
+<p>The census() function will build a URL based on variables specified within the function and then query the API and output the requested data as a neat tibble with appropriate data types. The following example highlights the data type coercion built into this function. For example, the time column JWAP has many NA values of JWAP because the JWAP variable (time of arrival for work) value in the API is a number code, in which 0 corresponds to either unemployed individuals or someone who is working from home, so a time of arrival for work is not applicable in this case. To help prevent excess burden on loading data, a geographical subset was added and assigned to state 20, which is the census code for the state of Kansas.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">census</span>(<span class="at">num_var =</span> <span class="fu">c</span>(<span class="st">"AGEP"</span>, <span class="st">"JWAP"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 29,940 × 5
+    AGEP JWAP                PWGTP SEX   state
+   &lt;dbl&gt; &lt;dttm&gt;              &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;
+ 1    17 2025-09-30 06:47:00     3 2     20   
+ 2    17 NA                     12 1     20   
+ 3    21 NA                     73 2     20   
+ 4    22 2025-09-30 05:37:00    44 1     20   
+ 5    67 NA                     58 2     20   
+ 6    75 NA                      9 1     20   
+ 7    19 NA                     53 1     20   
+ 8    18 NA                      3 1     20   
+ 9    64 NA                    133 1     20   
+10    19 NA                    102 2     20   
+# ℹ 29,930 more rows</code></pre>
+</div>
+</div>
+<p>If we want to look at a range of years, the census_year_range function calls the census function once for each year of interest, then merges these tibbles into one with a year variable. Every year within the range of valid years for the census function applies, except 2020 as there is no census API for that year. In this example we chose the years 2022, which is the default year call in census, plus the year 2021. The resulting tibble is considerably larger (58,897 rows vs 28,957 rows) than the previous example of the use of the census function due to the inclusion of two years of data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">census_year_range</span>(<span class="at">years =</span> (<span class="fu">c</span>(<span class="dv">2021</span>, <span class="dv">2022</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 58,897 × 5
+   years  AGEP PWGTP SEX   state
+   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;
+ 1 2021     24    67 1     20   
+ 2 2021     71   118 1     20   
+ 3 2021     22   103 1     20   
+ 4 2021     18   100 2     20   
+ 5 2021     79    13 2     20   
+ 6 2021     49    10 1     20   
+ 7 2021     88    12 2     20   
+ 8 2021     94     7 2     20   
+ 9 2021     74    97 1     20   
+10 2021     27    78 1     20   
+# ℹ 58,887 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="investigation-using-the-created-functions" class="level2">
+<h2 class="anchored" data-anchor-id="investigation-using-the-created-functions">Investigation Using the Created Functions</h2>
+<p>The purpose of this section is show how the summary function and plot function defined in the Function Code.qmd file can be used to generate weighted summaries as well as a generic boxplot from the census() tibble created from the API above. We are able to grab data from the census api, run weighted summaries (means and standard deviations) using PWGTP, and from that we are able to make a simple weighted boxplot.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Necessary Packages</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To demonstrate the use of the functions created, we are going to grab a small demo set to use these functions on.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>mydata <span class="ot">&lt;-</span> <span class="fu">census</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2022</span>,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">num_var =</span> <span class="fu">c</span>(<span class="st">"AGEP"</span>, <span class="st">"JWMNP"</span>),</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cat_var =</span> <span class="st">"SEX"</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">geog =</span> <span class="st">"state"</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">spec =</span> <span class="st">"20"</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(mydata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "census"     "tbl_df"     "tbl"        "data.frame"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>mydata</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 29,940 × 5
+    AGEP JWMNP PWGTP SEX   state
+   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;
+ 1    52    10    58 1     20   
+ 2    51    15    67 2     20   
+ 3    28    10    53 1     20   
+ 4    25    40    51 2     20   
+ 5    21    40    66 2     20   
+ 6    26     5    60 2     20   
+ 7    34     0    75 1     20   
+ 8     2     0    92 1     20   
+ 9     1     0    94 2     20   
+10    20     0   205 1     20   
+# ℹ 29,930 more rows</code></pre>
+</div>
+</div>
+<p>We are going to use the created summary function to summarize all the numeric columns except for PWGTP to get a named list. It is a numeric table of weighted means/standard deviations (excluding PWGTP) and a categorical table of the weighted counts. By default it summarizes are the numeric columns in the tibble but we can select specific columns when we want to trim our focus.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Numeric (except for PWGTP)</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="fu">summary.function</span>(mydata)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(output<span class="sc">$</span>numeric)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  variable weighted_mean weighted_sd
+1     AGEP     38.692393    23.57071
+2    JWMNP      8.578282    15.91281</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(output<span class="sc">$</span>categorical)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  variable level weighted_count
+1      SEX     1        1470818
+2      SEX     2        1466332
+3    state    20        2937150</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Specific Numerical Summary</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>AGEP_Specific <span class="ot">&lt;-</span> <span class="fu">summary.function</span>(mydata, <span class="at">num_var =</span> <span class="st">"AGEP"</span>, <span class="at">cat_var =</span> <span class="st">"SEX"</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>AGEP_Specific<span class="sc">$</span>numeric</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  variable weighted_mean weighted_sd
+1     AGEP      38.69239    23.57071</code></pre>
+</div>
+</div>
+<p>For visual representation, we use a created plot function which will always produce a boxplot. The variables are passed as strings using named arguments. The plot function below uses sex as the categorical variable and AGEP as the numeric variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mydata, <span class="st">"SEX"</span>, <span class="st">"AGEP"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Narrative---Examples_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="investigating-something-interesting" class="level2">
+<h2 class="anchored" data-anchor-id="investigating-something-interesting">Investigating something Interesting</h2>
+<p>For this final section, we wanted to take a look at and visualize Census data for relationships between age, weight, and sex for the state of Kansas (code 20) in the year 2022. To start out, lets return those variables from the census api.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">census</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 29,940 × 4
+    AGEP PWGTP SEX   state
+   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;
+ 1    52    58 1     20   
+ 2    51    67 2     20   
+ 3    28    53 1     20   
+ 4    25    51 2     20   
+ 5    21    66 2     20   
+ 6    26    60 2     20   
+ 7    34    75 1     20   
+ 8     2    92 1     20   
+ 9     1    94 2     20   
+10    20   205 1     20   
+# ℹ 29,930 more rows</code></pre>
 </div>
 </div>
 
