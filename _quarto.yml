@@ -1,6 +1,16 @@
 project:
   type: website
   output-dir: docs
-  render: 
-    - Function Code.qmd
-    - Narrative & Examples.qmd
+  
+website: 
+  title: "Project 1"
+  navbar:
+    left: 
+      - href: Function Code.qmd
+        text: "Functions"
+      - href: Narrative & Examples.qmd
+        text: "Narrative & Examples"
+        
+format: 
+  html: 
+    theme: cosmo

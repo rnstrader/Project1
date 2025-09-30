@@ -4,6 +4,10 @@ format: html
 editor: visual
 ---
 
+This chunk below allows functions created on the function code qmd file to be recognized when called on this file for the final webpage rendering.
+```{r, child="Function Code.qmd"}
+```
+
 ## Data Processing
 
 The purpose of all of the code that is included in this narrative section is to highlight examples of and to utilize functions created in the Function Code.qmd file of this project to both query the US Census API, as well as output the information contained within into a convenient tibble format, while allowing the user to specify several endpoints of interest within the requested region/geographical subset. We start by importing all of the necessary packages for these functions, then creating a function that takes any general URL (In this example the URL for the 2022 Census Microdata API from Census.gov) and then outputting the result of the GET() function as our URL_id object. This function will be utilized within future functions to quickly transform the URL that has been built to the user's specifications. After looking at its structure we can see that the raw data is in the content element.
