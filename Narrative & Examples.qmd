@@ -5,6 +5,7 @@ editor: visual
 ---
 
 This chunk below allows functions created on the function code qmd file to be recognized when called on this file for the final webpage rendering.
+
 ```{r, child="Function Code.qmd"}
 ```
 
@@ -85,9 +86,36 @@ For visual representation, we use a created plot function which will always prod
 plot(mydata, "SEX", "AGEP")
 ```
 
-## Investigating something Interesting
+## Investigating Something Interesting
 
-For this final section, we wanted to take a look at and visualize Census data for relationships between age, weight, and sex for the state of Kansas (code 20) in the year 2022. To start out, lets return those variables from the census api.
+For this final section, we wanted to take a look at and visualize Census data for relationships between age and sex for the state of Kansas (code 20) in the year 2022. To start out, lets return those variables from the census API.
+
 ```{r}
 census()
 ```
+
+Now we are going to use grab the variables of interest from the census API
+
+```{r}
+#Returning variables of focus from Kansas
+kansas <- census(
+  year = 2022,
+  num_var = c("AGEP", "PWGTP"),
+  cat_var = "SEX",
+  geog = "state",
+  spec = (20) #Kansas state code
+)
+class(kansas) <- c("census", class(kansas))
+
+head(kansas)
+```
+
+Now we are going to investigate age and sex accounting for the survey weights (PWGTP).
+
+```{r}
+summary(kansas)
+
+plot(kansas, "SEX", "AGEP")
+```
+
+The boxplot tells us that the age distributions for males and females are pretty similar. However there do appear to be two slight differences. The medians are pretty close together with females (2) have a slightly higher median than males (1) and the upper quartile for women is slightly higher which tells us that there are more older women in the population in Kansas.
