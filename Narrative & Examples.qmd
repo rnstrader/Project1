@@ -80,3 +80,10 @@ For visual representation, we use a created plot function which will always prod
 ```{r}
 plot(mydata, "SEX", "AGEP")
 ```
+
+## Investigating something Interesting
+
+For this final section, we wanted to take a look at and visualize Census data for relationships between age, weight, and sex for the state of Kansas (code 20) in the year 2022. To start out, lets return those variables from the census api.
+```{r}
+census()
+```
