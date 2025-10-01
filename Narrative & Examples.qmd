@@ -44,7 +44,7 @@ census_year_range(years = (c(2021, 2022)))
 
 ## Investigation Using the Created Functions
 
-The purpose of this section is show how the summary function and plot function defined in the Function Code.qmd file can be used to generate weighted summaries as well as a generic boxplot from the census() tibble created from the API above. We are able to grab data from the census api, run weighted summaries (means and standard deviations) using PWGTP, and from that we are able to make a simple weighted boxplot.
+The purpose of this section is show how the summary function and plot function defined in the Function Code.qmd file can be used to generate weighted summaries as well as a generic boxplot from the census() tibble created from the API above. We are able to grab data from the census api, run weighted summaries (means and standard deviations) using PWGTP, and from that we are able to make a simple weighted boxplot.The focus will start off with talking about the code whilst the end will discuss what we discovered when looking at the AGEP (age) and SEX(1: Male, 2: Female) from Kansas' census data in the year 2022. 
 
 ```{r}
 #Necessary Packages
@@ -55,7 +55,7 @@ library(ggplot2)
 To demonstrate the use of the functions created, we are going to grab a small demo set to use these functions on.
 
 ```{r}
-mydata <- census(
+kansas_data <- census(
   year = 2022,
   num_var = c("AGEP", "JWMNP"),
   cat_var = "SEX",
@@ -63,59 +63,28 @@ mydata <- census(
   spec = "20"
 )
 
-class(mydata)
-mydata
+class(kansas_data)
+head(kansas_data)
 ```
 
 We are going to use the created summary function to summarize all the numeric columns except for PWGTP to get a named list. It is a numeric table of weighted means/standard deviations (excluding PWGTP) and a categorical table of the weighted counts. By default it summarizes are the numeric columns in the tibble but we can select specific columns when we want to trim our focus.
 
 ```{r}
 #Numeric (except for PWGTP)
-output <- summary.function(mydata)
+output <- summary.census(census_data)
 head(output$numeric)
 head(output$categorical)
 
 #Specific Numerical Summary
-AGEP_Specific <- summary.function(mydata, num_var = "AGEP", cat_var = "SEX")
+AGEP_Specific <- summary.census(census_data, num_var = "AGEP", cat_var = "SEX")
 AGEP_Specific$numeric
 ```
 
-For visual representation, we use a created plot function which will always produce a boxplot. The variables are passed as strings using named arguments. The plot function below uses sex as the categorical variable and AGEP as the numeric variable.
+For visual representation, we use a created plot function which will always produce a boxplot. The variables are passed as strings using named arguments. The plot function below uses SEX as the categorical variable and AGEP as the numeric variable.
 
 ```{r}
-plot(mydata, "SEX", "AGEP")
+plot(census_data, "SEX", "AGEP")
 ```
 
-## Investigating Something Interesting
+The summaries and plots above investigated census data from the state of Kansas (code 20) in the year 2022 with the variables of interest being AGEP (age) and SEX (1: Male, 2: Female). The boxplot tells us that the age distributions for males and females are pretty similar. However there do appear to be two slight differences. The medians are pretty close together with Females having a slightly higher median than Males. That along with the fact that the upper quartile for females is slightly larger than its own lower quartile indicates that there are more older women in the population in Kansas (slight skew in population) which does not appear present for the men.
 
-For this final section, we wanted to take a look at and visualize Census data for relationships between age and sex for the state of Kansas (code 20) in the year 2022. To start out, lets return those variables from the census API.
-
-```{r}
-census()
-```
-
-Now we are going to use grab the variables of interest from the census API
-
-```{r}
-#Returning variables of focus from Kansas
-kansas <- census(
-  year = 2022,
-  num_var = c("AGEP", "PWGTP"),
-  cat_var = "SEX",
-  geog = "state",
-  spec = (20) #Kansas state code
-)
-class(kansas) <- c("census", class(kansas))
-
-head(kansas)
-```
-
-Now we are going to investigate age and sex accounting for the survey weights (PWGTP).
-
-```{r}
-summary(kansas)
-
-plot(kansas, "SEX", "AGEP")
-```
-
-The boxplot tells us that the age distributions for males and females are pretty similar. However there do appear to be two slight differences. The medians are pretty close together with females (2) have a slightly higher median than males (1) and the upper quartile for women is slightly higher which tells us that there are more older women in the population in Kansas.

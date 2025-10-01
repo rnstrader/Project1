@@ -146,27 +146,27 @@ Creating the census summary function that will produce means and standard deviat
 ```{r}
 
 #Calling data for function
-mydata <- census()
+census_data <- census()
 
-summary.function <- function(mydata, num_var = NULL, cat_var = NULL, na.rm = TRUE, ...){
+summary.census <- function(census_data, num_var = NULL, cat_var = NULL, na.rm = TRUE, ...){
   #Checking for census class
-  if (!"census" %in% class(mydata)) {
+  if (!"census" %in% class(census_data)) {
     stop("Error: Does not have census class")
   }
   
   #Checking that PWGTP exists and is numeric
-  if (!("PWGTP" %in% names(mydata)) || !is.numeric(mydata$PWGTP)) {
+  if (!("PWGTP" %in% names(census_data)) || !is.numeric(census_data$PWGTP)) {
     stop("Error: PWGTP is either missing or not numeric")
   }
   
   #Creating weight vector
-  weight_vector <- mydata$PWGTP
+  weight_vector <- census_data$PWGTP
   
   #Defining numeric variable (user-selection)
   if (is.null(num_var)) {
     
     #Default (all numeric colums besides PWGTP)
-    num_vars <- names(dplyr::select(mydata, where(is.numeric)))
+    num_vars <- names(dplyr::select(census_data, where(is.numeric)))
     num_vars <- num_vars[num_vars != "PWGTP"]
     
     if (length(num_vars) == 0) {
@@ -178,12 +178,12 @@ summary.function <- function(mydata, num_var = NULL, cat_var = NULL, na.rm = TRU
     #Numeric Variables specificed by user 
     
     #If the variables are not found
-    if (!all(num_var %in% names(mydata))) {
+    if (!all(num_var %in% names(census_data))) {
       stop("Error: 1 or more user-provided numeric variables were NOT found")
     }
     
     #If the variables are not numeric
-    if (!all(sapply(mydata[num_var], is.numeric))) {
+    if (!all(sapply(census_data[num_var], is.numeric))) {
       stop("Error: 1 or more user-provided variables is NOT numeric")
     }
     
@@ -193,7 +193,7 @@ summary.function <- function(mydata, num_var = NULL, cat_var = NULL, na.rm = TRU
   
   #Defining categorical variables (user-selection)
   if (is.null(cat_var)) {
-    cat_vars <- names(dplyr::select(mydata, where(is.character)))
+    cat_vars <- names(dplyr::select(census_data, where(is.character)))
     
     if (length(cat_vars) == 0) {
       stop("Error: NOT a character variable")
@@ -204,11 +204,11 @@ summary.function <- function(mydata, num_var = NULL, cat_var = NULL, na.rm = TRU
     #Categorical variables specified by user
     
     #If categorical variables are not found
-    if (!all(cat_var %in% names(mydata))) {
+    if (!all(cat_var %in% names(census_data))) {
       stop("Error: 1 or more user-provided categorical variables were NOT found")
     }
     #If variables are not character
-    if (!all(sapply(mydata[cat_var], is.character))) {
+    if (!all(sapply(census_data[cat_var], is.character))) {
       stop("Error: 1 or more user-provided categorical variables is NOT character")
     }
     #If the input makes it  all the above checks then use
@@ -226,7 +226,7 @@ summary.function <- function(mydata, num_var = NULL, cat_var = NULL, na.rm = TRU
     )
   #Going through individual numeric variables
   for (var in num_vars) {
-    numeric_vector <- mydata[[var]]
+    numeric_vector <- census_data[[var]]
     
     #Formulas
     sample_mean <- sum(numeric_vector * weight_vector)/ sum(weight_vector)
@@ -252,7 +252,7 @@ summary.function <- function(mydata, num_var = NULL, cat_var = NULL, na.rm = TRU
   )
   #Going through individual categorical variables
   for (var in cat_vars) {
-    cat_tibble <- mydata[[var]]
+    cat_tibble <- census_data[[var]]
     
     #Weighted Counts
     w_counts <- tapply(weight_vector, cat_tibble, sum, na.rm = TRUE)
@@ -280,7 +280,7 @@ Testing the summary function on a variable returned from the census API function
 
 ```{r}
 #Testing the summary function
-summary.function(mydata)
+summary.census(census_data)
 
 
 ```
@@ -289,26 +289,26 @@ Creating a generic plot function to visualize data in census tibbles.
 
 ```{r}
 #Plot function
-plot <- function(mydata, cat_var, num_var, ...) {
-  #Check that mydata is a census tibble
-  if (!"census" %in% class(mydata)) {
+plot <- function(census_data, cat_var, num_var, ...) {
+  #Check that census_data is a census tibble
+  if (!"census" %in% class(census_data)) {
     stop("Error: Object is not part of the census class")
   }
   
   #Checking variable existance
-  if (!cat_var %in% names(mydata)) {
+  if (!cat_var %in% names(census_data)) {
     stop("Error: Categorical variable not found")
   }
   
-  if (!num_var %in% names(mydata)) {
+  if (!num_var %in% names(census_data)) {
     stop("Error: Numeric variable not found")
   }
 
-#Making the plot
+#Making the boxplot
 library(ggplot2)
-ggplot(mydata,
+ggplot(census_data,
        aes(x = get(cat_var), y = get(num_var), weight = PWGTP)) + geom_boxplot() + xlab("SEX") + ylab ("AGEP")
 }
 
-plot(mydata, "SEX", "AGEP")
+plot(census_data, "SEX", "AGEP")
 ```
