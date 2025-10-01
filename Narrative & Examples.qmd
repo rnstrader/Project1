@@ -6,7 +6,7 @@ editor: visual
 
 This chunk below allows functions created on the function code qmd file to be recognized when called on this file for the final webpage rendering.
 
-```{r, child="Function Code.qmd"}
+```{r, child="Function Code.qmd", include = FALSE}
 ```
 
 ## Data Processing
